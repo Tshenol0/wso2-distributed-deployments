@@ -1,0 +1,288 @@
+[server]
+hostname = "localhost"
+node_ip = "0.0.0.0"
+base_path = "${carbon.protocol}://${carbon.host}:${carbon.management.port}"
+server_role = "control-plane"
+
+[super_admin]
+username = "admin"
+password = "admin"
+create_admin_account = true
+
+[user_store]
+type = "database_unique_id"
+scim_enabled = true
+
+[database.apim_db]
+type = "mysql"
+url = "jdbc:mysql://stack-storedata-1:3306/WSO2AM_DB?useSSL=false"
+username = "admin"
+password = "admin"
+
+[database.shared_db]
+type = "mysql"
+url = "jdbc:mysql://stack-storedata-1:3306/WSO2SHARED_DB?useSSL=false"
+username = "admin"
+password = "admin"
+
+[keystore.tls]
+file_name =  "wso2carbon.jks"
+type =  "JKS"
+password =  "wso2carbon"
+alias =  "wso2carbon"
+key_password =  "wso2carbon"
+
+[truststore]
+file_name = "client-truststore.jks"
+type = "JKS"
+password = "wso2carbon"
+
+[transport.https]
+port = 9443
+
+[transport.http]
+port = 8280
+
+[[apim.gateway.environment]]
+name = "Internal Gateway"
+type = "hybrid"
+display_in_api_console = true
+description = "This is an internal gateway that handles both production and sandbox token traffic."
+show_as_token_endpoint_url = true
+service_url = "https://stack-apim-1:9443/services/"
+username= "admin"
+password= "admin"
+http_endpoint = "http://localhost:8280"
+https_endpoint = "https://localhost:8243"
+
+[[apim.gateway.environment]]
+name = "External Gateway"
+type = "hybrid"
+display_in_api_console = true
+description = "This is an external gateway that handles both production and sandbox token traffic."
+show_as_token_endpoint_url = true
+service_url = "https://stack-external-1:9443/services/"
+username= "admin"
+password= "admin"
+http_endpoint = "http://stack-external-1:8280"
+https_endpoint = "https://stack-external-1:8243"
+
+[apim.throttling]
+username = "admin"
+password = "admin"
+service_url = "https://localhost:9443/services/"
+enable_data_publishing = true
+
+[keyManager]
+service_url = "https://stack-key-1:9443/services/"
+username = "admin"
+password = "admin"
+
+[keyManager.configuration]
+TokenEndpoint = "https://stack-key-1:9443/oauth2/token"
+RevokeEndpoint = "https://stack-key-1:9443/oauth2/revoke"
+IntrospectEndpoint = "https://stack-key-1:9443/oauth2/introspect"
+AuthorizeEndpoint = "https://stack-key-1:9443/oauth2/authorize"
+
+[apim.devportal]
+url = "https://localhost:9443/devportal"
+
+[apim.publisher]
+url = "https://localhost:9443/publisher"
+
+#[apim.key_manager_config]
+#enable_apim_key_manager = false
+
+#[apim.cache.gateway_token]
+#enable = true
+#expiry_time = "900s"
+
+#[apim.cache.resource]
+#enable = true
+#expiry_time = "900s"
+
+#[apim.cache.km_token]
+#enable = false
+#expiry_time = "15m"
+
+[[resource.access_control]]
+context="(.*)/((\\.+)|(.*;+.*)|%2e)/(.*)"
+secure=true
+http_method="all"
+
+#[apim.cache.recent_apis]
+#enable = false
+
+#[apim.cache.scopes]
+#enable = true
+
+#[apim.cache.publisher_roles]
+#enable = true
+
+#[apim.cache.jwt_claim]
+#enable = true
+#expiry_time = "15m"
+
+#[apim.cache.tags]
+#expiry_time = "2m"
+
+[apim.event_hub]
+enable = true
+username = "admin"
+password = "admin"
+service_url = "https://localhost:9443/services/"
+event_listening_endpoints = ["tcp://localhost:5672"]
+
+[[apim.event_hub.publish.url_group]]
+urls = ["tcp://stack-apim-1:9611"]
+auth_urls = ["ssl://stack-apim-1:9711"]
+
+#[[apim.analytics.url_group]]
+#analytics_url =["tcp://analytics1:7611","tcp://analytics2:7611"]
+#analytics_auth_url =["ssl://analytics1:7711","ssl://analytics2:7711"]
+#type = "loadbalance"
+
+#[[apim.analytics.url_group]]
+#analytics_url =["tcp://analytics1:7612","tcp://analytics2:7612"]
+#analytics_auth_url =["ssl://analytics1:7712","ssl://analytics2:7712"]
+#type = "failover"
+
+#[apim.idp]
+#server_url = "https://localhost:${mgt.transport.https.port}"
+#authorize_endpoint = "https://localhost:${mgt.transport.https.port}/oauth2/authorize"
+#oidc_logout_endpoint = "https://localhost:${mgt.transport.https.port}/oidc/logout"
+#oidc_check_session_endpoint = "https://localhost:${mgt.transport.https.port}/oidc/checksession"
+
+#[apim.jwt]
+#enable = true
+#encoding = "base64" # base64,base64url
+#generator_impl = "org.wso2.carbon.apimgt.keymgt.token.JWTGenerator"
+#claim_dialect = "http://wso2.org/claims"
+#convert_dialect = false
+#header = "X-JWT-Assertion"
+#signing_algorithm = "SHA256withRSA"
+#enable_user_claims = true
+#claims_extractor_impl = "org.wso2.carbon.apimgt.impl.token.ExtendedDefaultClaimsRetriever"
+
+#[apim.oauth_config]
+#enable_outbound_auth_header = false
+#auth_header = "Authorization"
+#revoke_endpoint = "https://localhost:${https.nio.port}/revoke"
+#enable_token_encryption = false
+#enable_token_hashing = false
+
+#[apim.devportal]
+#url = "https://localhost:${mgt.transport.https.port}/devportal"
+#enable_application_sharing = false
+#if application_sharing_type, application_sharing_impl both defined priority goes to application_sharing_impl
+#application_sharing_type = "default" #changed type, saml, default #todo: check the new config for rest api
+#application_sharing_impl = "org.wso2.carbon.apimgt.impl.SAMLGroupIDExtractorImpl"
+#display_multiple_versions = false
+#display_deprecated_apis = false
+#enable_comments = true
+#enable_ratings = true
+#enable_forum = true
+#enable_anonymous_mode=true
+
+[apim.cors]
+allow_origins = "*"
+allow_methods = ["GET","PUT","POST","DELETE","PATCH","OPTIONS"]
+allow_headers = ["authorization","Access-Control-Allow-Origin","Content-Type","SOAPAction","apikey", "testKey"]
+allow_credentials = false
+
+#[apim.throttling]
+#username = "admin"
+#password = "admin"
+#service_url = "https://apim:9443/services/"
+#enable_data_publishing = true
+
+#[event_receiver]
+#enabled = true
+
+[throttling]
+enabled = true
+
+[event_publisher]
+enabled = true
+
+#[apim.throttling.blacklist_condition]
+#start_delay = "5m"
+#period = "1h"
+
+#[apim.throttling.jms]
+#start_delay = "5m"
+
+#[apim.throttling.event_sync]
+#hostName = "0.0.0.0"
+#port = 11224
+
+#[apim.throttling.event_management]
+#hostName = "0.0.0.0"
+#port = 10005
+
+#[[apim.throttling.url_group]]
+#traffic_manager_urls = ["tcp://localhost:9611","tcp://localhost:9611"]
+#traffic_manager_auth_urls = ["ssl://localhost:9711","ssl://localhost:9711"]
+#type = "loadbalance"
+
+#[[apim.throttling.url_group]]
+#traffic_manager_urls = ["tcp://localhost:9611","tcp://localhost:9611"]
+#traffic_manager_auth_urls = ["ssl://localhost:9711","ssl://localhost:9711"]
+#type = "failover"
+
+#[apim.workflow]
+#enable = false
+#service_url = "https://localhost:9445/bpmn"
+#username = "$ref{super_admin.username}"
+#password = "$ref{super_admin.password}"
+#callback_endpoint = "https://localhost:${mgt.transport.https.port}/api/am/admin/v0.17/workflows/update-workflow-status"
+#token_endpoint = "https://localhost:${https.nio.port}/token"
+#client_registration_endpoint = "https://localhost:${mgt.transport.https.port}/client-registration/v0.17/register"
+#client_registration_username = "$ref{super_admin.username}"
+#client_registration_password = "$ref{super_admin.password}"
+
+#data bridge config
+#[transport.receiver]
+#tcp_port = 9611
+#ssl_port = 9711
+
+#[apim.notification]
+#from_address = "APIM.com"
+#username = "APIM"
+#password = "APIM+123"
+#hostname = "localhost"
+#port = 3025
+#enable_start_tls = false
+#enable_authentication = true
+
+#[apim.token.revocation]
+#notifier_impl = "org.wso2.carbon.apimgt.keymgt.events.TokenRevocationNotifierImpl"
+#enable_realtime_notifier = true
+#realtime_notifier.ttl = 5000
+#enable_persistent_notifier = true
+#persistent_notifier.hostname = "https://localhost:2379/v2/keys/jti/"
+#persistent_notifier.ttl = 5000
+#persistent_notifier.username = "root"
+#persistent_notifier.password = "root"
+
+[[event_handler]]
+name="userPostSelfRegistration"
+subscriptions=["POST_ADD_USER"]
+
+[service_provider]
+sp_name_regex = "^[\\sa-zA-Z0-9._-]*$"
+
+[transport.passthru_https.sender.parameters]
+HostnameVerifier = "AllowAll"
+
+[[event_listener]]
+id = "token_revocation"
+type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+name = "org.wso2.is.notification.ApimOauthEventInterceptor"
+order = 1
+
+[event_listener.properties]
+notification_endpoint = "https://localhost:${mgt.transport.https.port}/internal/data/v1/notify"
+username = "${super_admin.username}"
+password = "${super_admin.password}"
+'header.X-WSO2-KEY-MANAGER' = "WSO2-IS"

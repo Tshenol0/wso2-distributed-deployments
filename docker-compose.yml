@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  storedata:
+    image: mysql:5.7
+    networks:
+      - components    
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3333:3306"
+    volumes:
+      - stored:/var/lib/mysql
+      - ./database-init:/docker-entrypoint-initdb.d
+
+  key:
+    build: ./wso2is
+    networks:
+      - components
+    depends_on:
+      - storedata
+    ports:
+      - "9445:9443"
+      - "9765:9763"
+      - "4000:4000"
+    volumes:
+      - ./is/deployment.toml:/home/wso2carbon/wso2is-5.10.0/repository/conf/deployment.toml      
+
+  apim:
+    build: ./wso2apim
+    networks:
+      - components
+    depends_on:
+      - storedata
+      - key
+    ports:
+      - "9443:9443"
+      - "9763:9763"
+      - "8280:8280"
+      - "8243:8243"
+    volumes:
+      - ./control/deployment.toml:/home/wso2carbon/wso2am-3.2.0/repository/conf/deployment.toml      
+  external:
+    build: ./wso2gateway
+    networks:
+      - components
+    ports:
+      - "8241:8243"
+      - "8281:8280"
+      - "9099:9099"
+      - "8099:8099"
+    environment:
+      - JAVA_OPTS=-Dprofile=gateway-worker   
+    volumes:
+      - ./gateway/deployment.toml:/home/wso2carbon/wso2am-3.2.0/repository/conf/deployment.toml
+    depends_on:
+      - storedata
+      - key
+      - apim
+
+volumes:
+  stored:
+
+networks:
+  components:
+    driver: bridge  
