@@ -4,9 +4,13 @@ This project provides a containerized WSO2 deployment with three main nodes—AP
 
 Components
 Service	Version	Role
+
 MySQL	Latest stable	Shared WSO2 databases (user, registry, etc.)
+
 WSO2 API Manager	3.2.0	Publisher / Store / Traffic Manager
+
 WSO2 External Gateway	3.2.0	API Gateway node
+
 WSO2 Identity Server	5.10.0	Acts as Key Manager for API Manager
 
 Each WSO2 node mounts its own deployment.toml for custom configuration and attaches persistent volumes for data.
